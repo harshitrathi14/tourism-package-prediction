@@ -1,0 +1,49 @@
+name: MLOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Data Registration
+      run: |
+        python data_registration.py
+
+    - name: Run Data Preparation
+      run: |
+        python data_preparation.py
+
+    - name: Run Model Building
+      run: |
+        python model_building.py
+
+    - name: Commit Best Model and Params
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add model.pkl best_params.json
+        # Only commit and push if there are changes
+        git diff-index --quiet HEAD || (git commit -m "Automated update of best model and parameters [skip ci]" && git push)
