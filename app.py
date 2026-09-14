@@ -70,8 +70,8 @@ if submit_button:
     try:
         prediction = model.predict(input_data)
         if prediction[0] == 1:
-            st.success("🎉 The customer is LIKELY to purchase the Wellness Tourism Package!")
+            st.success("The customer is likely to purchase the Wellness Tourism Package.")
         else:
-            st.error("❌ The customer is UNLIKELY to purchase the Wellness Tourism Package.")
+            st.error("The customer is unlikely to purchase the Wellness Tourism Package.")
     except Exception as e:
         st.error(f"An error occurred during prediction: {e}")
